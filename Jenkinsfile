@@ -1,10 +1,15 @@
+
 pipeline {
     agent any
+
+    options {
+        timestamps()
+    }
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Starting Python CI'
+                checkout scm
             }
         }
 
@@ -14,15 +19,21 @@ pipeline {
             }
         }
 
+        stage('Create Virtual Environment') {
+            steps {
+                bat 'python -m venv .venv'
+            }
+        }
+
         stage('Install Dependencies') {
             steps {
-                bat 'python -m pip install -r requirements.txt'
+                bat '.venv\\Scripts\\python.exe -m pip install -r requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat 'python -m pytest -v'
+                bat '.venv\\Scripts\\python.exe -m pytest -v'
             }
         }
     }
